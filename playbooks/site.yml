@@ -1,0 +1,124 @@
+---
+- name: Prepare all VMs
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install required packages
+      ansible.builtin.apt:
+        name:
+          - net-tools
+          - zip
+          - curl
+          - jq
+          - tree
+          - unzip
+          - wget
+          - siege
+          - apt-transport-https
+          - ca-certificates
+          - software-properties-common
+          - gnupg
+          - lsb-release
+        state: present
+        update_cache: true
+
+- name: Install dashboard service
+  hosts: dashboard
+  become: true
+
+  tasks:
+    - name: Download dashboard-service zip
+      ansible.builtin.get_url:
+        url: https://github.com/hashicorp/demo-consul-101/releases/download/v0.0.5/dashboard-service_linux_amd64.zip
+        dest: /tmp/dashboard-service.zip
+        mode: "0644"
+
+    - name: Unzip dashboard-service
+      ansible.builtin.unarchive:
+        src: /tmp/dashboard-service.zip
+        dest: /tmp
+        remote_src: true
+        creates: /tmp/dashboard-service_linux_amd64
+
+    - name: Install dashboard-service binary
+      ansible.builtin.copy:
+        src: /tmp/dashboard-service_linux_amd64
+        dest: /usr/local/bin/dashboard-service
+        remote_src: true
+        owner: vagrant
+        group: vagrant
+        mode: "0755"
+
+    - name: Install dashboard systemd unit file
+      ansible.builtin.template:
+        src: dashboard.service.j2
+        dest: /etc/systemd/system/dashboard-api.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart dashboard-api service
+
+    - name: Enable and start dashboard-api service
+      ansible.builtin.systemd:
+        name: dashboard-api
+        daemon_reload: true
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart dashboard-api service
+      ansible.builtin.systemd:
+        name: dashboard-api
+        daemon_reload: true
+        state: restarted
+
+- name: Install counting service
+  hosts: counting
+  become: true
+
+  tasks:
+    - name: Download counting-service zip
+      ansible.builtin.get_url:
+        url: https://github.com/hashicorp/demo-consul-101/releases/download/v0.0.5/counting-service_linux_amd64.zip
+        dest: /tmp/counting-service.zip
+        mode: "0644"
+
+    - name: Unzip counting-service
+      ansible.builtin.unarchive:
+        src: /tmp/counting-service.zip
+        dest: /tmp
+        remote_src: true
+        creates: /tmp/counting-service_linux_amd64
+
+    - name: Install counting-service binary
+      ansible.builtin.copy:
+        src: /tmp/counting-service_linux_amd64
+        dest: /usr/local/bin/counting-service
+        remote_src: true
+        owner: vagrant
+        group: vagrant
+        mode: "0755"
+
+    - name: Install counting systemd unit file
+      ansible.builtin.template:
+        src: counting.service.j2
+        dest: /etc/systemd/system/counting-api.service
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Restart counting-api service
+
+    - name: Enable and start counting-api service
+      ansible.builtin.systemd:
+        name: counting-api
+        daemon_reload: true
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart counting-api service
+      ansible.builtin.systemd:
+        name: counting-api
+        daemon_reload: true
+        state: restarted

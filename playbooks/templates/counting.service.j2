@@ -1,0 +1,14 @@
+[Unit]
+Description=Counting API service
+After=syslog.target network.target
+
+[Service]
+Environment=PORT="{{ counting_port }}"
+ExecStart=/usr/local/bin/counting-service
+User=vagrant
+Group=vagrant
+ExecStop=/bin/sleep 5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

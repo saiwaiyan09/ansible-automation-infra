@@ -1,0 +1,15 @@
+[Unit]
+Description=Dashboard API service
+After=syslog.target network.target
+
+[Service]
+Environment=PORT="{{ dashboard_port }}"
+Environment=COUNTING_SERVICE_URL="http://{{ counting_ip }}:{{ counting_port }}"
+ExecStart=/usr/local/bin/dashboard-service
+User=vagrant
+Group=vagrant
+ExecStop=/bin/sleep 5
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
