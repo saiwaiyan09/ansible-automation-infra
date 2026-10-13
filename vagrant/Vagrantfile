@@ -1,7 +1,9 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-PUBLIC_KEY_PATH = '/home/sai-wai-yan/pov-ansible/pov-ansible/.ssh/id_ed25519.pub'.freeze
+PUBLIC_KEY_PATH = File.expand_path(
+  ENV.fetch('VAGRANT_SSH_PUBLIC_KEY', '~/.ssh/id_ed25519.pub')
+).freeze
 Vagrant.configure("2") do |config|
 
     # We set up one machine, with a default NAT interface and a host-only 192.168.30.11

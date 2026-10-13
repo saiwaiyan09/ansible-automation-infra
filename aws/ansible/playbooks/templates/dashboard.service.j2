@@ -1,0 +1,15 @@
+[Unit]
+Description=Dashboard API service
+After=network.target
+
+[Service]
+Environment="PORT={{ dashboard_port }}"
+Environment="COUNTING_SERVICE_URL={{ counting_service_url }}"
+ExecStart=/usr/local/bin/dashboard-service
+User=ec2-user
+Group=ec2-user
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
