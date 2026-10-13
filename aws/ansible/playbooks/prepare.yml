@@ -1,0 +1,15 @@
+---
+- name: Prepare AWS application servers
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - wget
+          - unzip
+          - git
+          - jq
+        state: present

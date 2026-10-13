@@ -1,0 +1,10 @@
+---
+# Dashboard configuration
+dashboard_port: 9002
+
+# Counting configuration
+counting_port: 9003
+
+# Replace with the internal ALB DNS name from Terraform outputs.
+# Dashboard connects to the ALB listener on port 9002.
+counting_service_url: "http://YOUR-INTERNAL-ALB-DNS:9002"

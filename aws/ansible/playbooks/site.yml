@@ -1,0 +1,14 @@
+---
+- name: Verify AWS managed nodes
+  hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: Display hostname
+      ansible.builtin.command: hostname
+      register: hostname_result
+      changed_when: false
+
+    - name: Show hostname
+      ansible.builtin.debug:
+        msg: "Connected to {{ inventory_hostname }}: {{ hostname_result.stdout }}"
